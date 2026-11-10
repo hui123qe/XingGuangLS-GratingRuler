@@ -1,0 +1,166 @@
+<UserControl
+    x:Class="GratingRuler.Views.Controls.MeasurementRecordsView"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+    <UserControl.Resources>
+        <DataTemplate x:Key="PointRecordsTemplate">
+            <Grid>
+                <DataGrid ItemsSource="{Binding Points}" AutomationProperties.Name="测量记录">
+                    <DataGrid.Columns>
+                        <DataGridTextColumn
+                            Width="55"
+                            Header="循环"
+                            Binding="{Binding Cycle}" />
+                        <DataGridTextColumn
+                            Width="65"
+                            Header="方向"
+                            Binding="{Binding Direction}" />
+                        <DataGridTextColumn
+                            Width="55"
+                            Header="点号"
+                            Binding="{Binding Point}" />
+                        <DataGridTextColumn
+                            Width="110"
+                            Header="目标 / mm"
+                            Binding="{Binding Target}"
+                            ElementStyle="{StaticResource NumericCellStyle}" />
+                        <DataGridTextColumn
+                            Width="110"
+                            Header="DUT / mm"
+                            Binding="{Binding Dut}"
+                            ElementStyle="{StaticResource NumericCellStyle}" />
+                        <DataGridTextColumn
+                            Width="110"
+                            Header="基准 / mm"
+                            Binding="{Binding Reference}"
+                            ElementStyle="{StaticResource NumericCellStyle}" />
+                        <DataGridTextColumn
+                            Width="100"
+                            Header="误差 / μm"
+                            Binding="{Binding Error}"
+                            ElementStyle="{StaticResource NumericCellStyle}" />
+                        <DataGridTextColumn
+                            Width="*"
+                            Header="质量"
+                            Binding="{Binding Quality}" />
+                    </DataGrid.Columns>
+                </DataGrid>
+                <TextBlock
+                    HorizontalAlignment="Center"
+                    Style="{StaticResource SecondaryTextStyle}"
+                    Text="暂无记录"
+                    Visibility="{Binding Points.Count, Converter={StaticResource EmptyVisibilityConverter}}"
+                    IsHitTestVisible="False" />
+            </Grid>
+        </DataTemplate>
+        <DataTemplate x:Key="TriggerRecordsTemplate">
+            <Grid>
+                <DataGrid ItemsSource="{Binding TriggerEvents}" AutomationProperties.Name="测量记录">
+                    <DataGrid.Columns>
+                        <DataGridTextColumn
+                            Width="55"
+                            Header="循环"
+                            Binding="{Binding Cycle}" />
+                        <DataGridTextColumn
+                            Width="65"
+                            Header="方向"
+                            Binding="{Binding Direction}" />
+                        <DataGridTextColumn
+                            Width="80"
+                            Header="边沿"
+                            Binding="{Binding Edge}" />
+                        <DataGridTextColumn
+                            Width="90"
+                            Header="物理边界"
+                            Binding="{Binding Boundary}" />
+                        <DataGridTextColumn
+                            Width="90"
+                            Header="事件 ID"
+                            Binding="{Binding TriggerId}" />
+                        <DataGridTextColumn
+                            Width="130"
+                            Header="锁存位置 / mm"
+                            Binding="{Binding LatchedPosition}"
+                            ElementStyle="{StaticResource NumericCellStyle}" />
+                        <DataGridTextColumn
+                            Width="140"
+                            Header="时间戳"
+                            Binding="{Binding Timestamp}" />
+                        <DataGridTextColumn
+                            Width="*"
+                            Header="质量"
+                            Binding="{Binding Quality}" />
+                    </DataGrid.Columns>
+                </DataGrid>
+                <TextBlock
+                    HorizontalAlignment="Center"
+                    Style="{StaticResource SecondaryTextStyle}"
+                    Text="暂无记录"
+                    Visibility="{Binding TriggerEvents.Count, Converter={StaticResource EmptyVisibilityConverter}}"
+                    IsHitTestVisible="False" />
+            </Grid>
+        </DataTemplate>
+        <DataTemplate x:Key="SampleRecordsTemplate">
+            <Grid>
+                <DataGrid ItemsSource="{Binding Samples}" AutomationProperties.Name="测量记录">
+                    <DataGrid.Columns>
+                        <DataGridTextColumn
+                            Width="75"
+                            Header="序号"
+                            Binding="{Binding Sequence}" />
+                        <DataGridTextColumn
+                            Width="75"
+                            Header="通道"
+                            Binding="{Binding Channel}" />
+                        <DataGridTextColumn
+                            Width="140"
+                            Header="时间戳"
+                            Binding="{Binding Timestamp}" />
+                        <DataGridTextColumn
+                            Width="100"
+                            Header="DUT"
+                            Binding="{Binding Dut}"
+                            ElementStyle="{StaticResource NumericCellStyle}" />
+                        <DataGridTextColumn
+                            Width="100"
+                            Header="基准"
+                            Binding="{Binding Reference}"
+                            ElementStyle="{StaticResource NumericCellStyle}" />
+                        <DataGridTextColumn
+                            Width="75"
+                            Header="单位"
+                            Binding="{Binding Unit}" />
+                        <DataGridTextColumn
+                            Width="*"
+                            Header="质量"
+                            Binding="{Binding Quality}" />
+                    </DataGrid.Columns>
+                </DataGrid>
+                <TextBlock
+                    HorizontalAlignment="Center"
+                    Style="{StaticResource SecondaryTextStyle}"
+                    Text="暂无记录"
+                    Visibility="{Binding Samples.Count, Converter={StaticResource EmptyVisibilityConverter}}"
+                    IsHitTestVisible="False" />
+            </Grid>
+        </DataTemplate>
+    </UserControl.Resources>
+    <ContentControl
+        HorizontalContentAlignment="Stretch"
+        VerticalContentAlignment="Stretch"
+        Content="{Binding}">
+        <ContentControl.Style>
+            <Style TargetType="ContentControl">
+                <Setter Property="ContentTemplate" Value="{StaticResource SampleRecordsTemplate}" />
+                <Style.Triggers>
+                    <DataTrigger Binding="{Binding Parameters.SelectedTask.Category}" Value="Static">
+                        <Setter Property="ContentTemplate" Value="{StaticResource PointRecordsTemplate}" />
+                    </DataTrigger>
+                    <DataTrigger Binding="{Binding Parameters.SelectedTask.Category}" Value="Edge">
+                        <Setter Property="ContentTemplate" Value="{StaticResource TriggerRecordsTemplate}" />
+                    </DataTrigger>
+                </Style.Triggers>
+            </Style>
+        </ContentControl.Style>
+    </ContentControl>
+</UserControl>

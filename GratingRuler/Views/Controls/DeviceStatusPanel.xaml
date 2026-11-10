@@ -1,0 +1,115 @@
+<UserControl
+    x:Class="GratingRuler.Views.Controls.DeviceStatusPanel"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+    <Border
+        Padding="12,18"
+        Background="{StaticResource WindowBrush}"
+        BorderBrush="{StaticResource BorderBrush}"
+        BorderThickness="1,0,0,0">
+        <ScrollViewer VerticalScrollBarVisibility="Auto">
+            <StackPanel>
+                <TextBlock Style="{StaticResource SectionTitleStyle}" Text="设备状态" />
+                <Border
+                    Margin="0,0,0,8"
+                    Padding="10,7"
+                    Background="{StaticResource WarningBrush}">
+                    <TextBlock FontWeight="SemiBold" Text="未准备好" />
+                </Border>
+                <TextBlock Margin="0,0,0,12" Text="模式：未知" />
+                <GroupBox Margin="0,0,0,12" Header="安全链">
+                    <StackPanel>
+                        <DockPanel Margin="0,4">
+                            <Ellipse
+                                Width="10"
+                                Height="10"
+                                Margin="0,0,8,0"
+                                Fill="{StaticResource UnknownBrush}" />
+                            <TextBlock Text="急停回路：未知" />
+                        </DockPanel>
+                        <DockPanel Margin="0,4">
+                            <Ellipse
+                                Width="10"
+                                Height="10"
+                                Margin="0,0,8,0"
+                                Fill="{StaticResource UnknownBrush}" />
+                            <TextBlock Text="正向限位：未知" />
+                        </DockPanel>
+                        <DockPanel Margin="0,4">
+                            <Ellipse
+                                Width="10"
+                                Height="10"
+                                Margin="0,0,8,0"
+                                Fill="{StaticResource UnknownBrush}" />
+                            <TextBlock Text="负向限位：未知" />
+                        </DockPanel>
+                    </StackPanel>
+                </GroupBox>
+                <GroupBox Margin="0,0,0,12" Header="控制与通信">
+                    <StackPanel>
+                        <DockPanel Margin="0,4">
+                            <Ellipse
+                                Width="10"
+                                Height="10"
+                                Margin="0,0,8,0"
+                                Fill="{StaticResource UnknownBrush}" />
+                            <TextBlock Text="运动控制器：未连接" />
+                        </DockPanel>
+                        <DockPanel Margin="0,4">
+                            <Ellipse
+                                Width="10"
+                                Height="10"
+                                Margin="0,0,8,0"
+                                Fill="{StaticResource UnknownBrush}" />
+                            <TextBlock Text="被测设备：未连接" />
+                        </DockPanel>
+                        <DockPanel Margin="0,4">
+                            <Ellipse
+                                Width="10"
+                                Height="10"
+                                Margin="0,0,8,0"
+                                Fill="{StaticResource UnknownBrush}" />
+                            <TextBlock Text="测量基准：未连接" />
+                        </DockPanel>
+                        <DockPanel Margin="0,4">
+                            <Ellipse
+                                Width="10"
+                                Height="10"
+                                Margin="0,0,8,0"
+                                Fill="{StaticResource UnknownBrush}" />
+                            <TextBlock Text="采集设备：未连接" />
+                        </DockPanel>
+                    </StackPanel>
+                </GroupBox>
+                <GroupBox Margin="0,0,0,12" Header="测量状态">
+                    <StackPanel>
+                        <DockPanel Margin="0,4">
+                            <Ellipse
+                                Width="10"
+                                Height="10"
+                                Margin="0,0,8,0"
+                                Fill="{StaticResource UnknownBrush}" />
+                            <TextBlock Text="参考有效性：未知" />
+                        </DockPanel>
+                        <DockPanel Margin="0,4">
+                            <Ellipse
+                                Width="10"
+                                Height="10"
+                                Margin="0,0,8,0"
+                                Fill="{StaticResource UnknownBrush}" />
+                            <TextBlock Text="同步状态：未知" />
+                        </DockPanel>
+                        <DockPanel Margin="0,4">
+                            <Ellipse
+                                Width="10"
+                                Height="10"
+                                Margin="0,0,8,0"
+                                Fill="{StaticResource UnknownBrush}" />
+                            <TextBlock Text="数据更新：未知" />
+                        </DockPanel>
+                    </StackPanel>
+                </GroupBox>
+            </StackPanel>
+        </ScrollViewer>
+    </Border>
+</UserControl>

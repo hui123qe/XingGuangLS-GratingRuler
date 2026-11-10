@@ -1,0 +1,158 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1680" height="980" viewBox="0 0 1680 980" role="img" aria-labelledby="title desc">
+  <title id="title">光栅尺测试台 — 测试工作台界面方案</title>
+  <desc id="desc">静态设计预览。左侧五项导航，中央配方摘要、测量曲线、执行控制和结果表，右侧设备状态。未连接、无采样数据，启动禁用。</desc>
+  <defs>
+    <style>
+      text { font-family: 'Microsoft YaHei UI', 'Microsoft YaHei', sans-serif; fill: #202020; font-size: 14px; }
+      .secondary { fill: #606060; }
+      .title { font-size: 22px; font-weight: 600; }
+      .heading { font-size: 16px; font-weight: 600; }
+      .panel { fill: #FAF9F9; stroke: #A6A6A6; }
+      .line { stroke: #B8B8B8; }
+      .button { fill: #F0F0F0; stroke: #B8CAE5; }
+      .disabled { fill: #9A9A9A; }
+      .value { font-size: 22px; font-weight: 600; }
+    </style>
+  </defs>
+  <rect width="1680" height="980" fill="#ECE9E9" />
+  <!-- 顶部标题与软件急停 -->
+  <rect width="1680" height="78" fill="#F4F4F4" />
+  <path d="M0 78H1680" class="line" />
+  <text x="24" y="35" class="title">光栅尺测试台</text>
+  <text x="24" y="59" class="secondary">测量 · 采集 · 分析</text>
+  <text x="1190" y="44" class="secondary">界面方案预览 · 非实时设备状态</text>
+  <rect x="1484" y="17" width="172" height="44" rx="2" fill="#FF0000" stroke="#B00000" />
+  <text x="1570" y="45" text-anchor="middle" style="fill:white;font-weight:600;font-size:16px">软件急停</text>
+  <!-- 左侧功能导航 -->
+  <path d="M210 78V942" class="line" />
+  <text x="20" y="114" class="heading">功能导航</text>
+  <g fill="#A9C2E9" stroke="#829FC8">
+    <rect x="14" y="136" width="182" height="60" />
+    <rect x="14" y="202" width="182" height="60" />
+    <rect x="14" y="268" width="182" height="60" />
+    <rect x="14" y="334" width="182" height="60" />
+    <rect x="14" y="400" width="182" height="60" />
+  </g>
+  <rect x="18" y="140" width="174" height="52" fill="none" stroke="white" />
+  <g text-anchor="middle">
+    <text x="105" y="172" style="fill:white;font-size:15px;font-weight:600">测试工作台</text>
+    <text x="105" y="238">参数设置</text>
+    <text x="105" y="304">维护界面</text>
+    <text x="105" y="370">运行记录</text>
+    <text x="105" y="436">报警记录</text>
+  </g>
+  <text x="20" y="880" class="secondary">当前任务</text>
+  <text x="20" y="907">T01-S 静态往返</text>
+  <!-- 中央标题与配方摘要 -->
+  <text x="228" y="115" style="font-size:20px;font-weight:600">测试工作台</text>
+  <text x="1100" y="114" class="secondary">会话：未创建　｜　任务：空闲</text>
+  <rect x="228" y="134" width="1154" height="108" class="panel" />
+  <text x="244" y="160" class="heading">当前测试配置</text>
+  <rect x="1120" y="145" width="94" height="26" fill="#FFAD00" />
+  <text x="1167" y="164" text-anchor="middle">尚未锁定</text>
+  <rect x="1226" y="143" width="140" height="32" rx="2" class="button" />
+  <text x="1296" y="164" text-anchor="middle">前往参数设置</text>
+  <path d="M244 182H1366" class="line" />
+  <text x="244" y="207">任务：T01-S 静态往返精度与重复性</text>
+  <text x="660" y="207">DUT：一维增量式光栅尺</text>
+  <text x="1028" y="207">基准：尚未配置</text>
+  <text x="244" y="229" class="secondary">设备编号：--</text>
+  <text x="660" y="229" class="secondary">配方版本：--　　批次：--</text>
+  <text x="1028" y="229" class="secondary">测试台：尚未配置</text>
+  <!-- 实时数值与曲线 -->
+  <rect x="228" y="254" width="814" height="108" class="panel" />
+  <path d="M499 268V348M770 268V348" class="line" />
+  <text x="244" y="281" class="secondary">DUT 位置</text>
+  <text x="244" y="318" class="value">--</text>
+  <text x="450" y="318">mm</text>
+  <text x="244" y="346" class="secondary">未连接</text>
+  <text x="515" y="281" class="secondary">基准位置</text>
+  <text x="515" y="318" class="value">--</text>
+  <text x="721" y="318">mm</text>
+  <text x="515" y="346" class="secondary">未连接</text>
+  <text x="786" y="281" class="secondary">测量误差</text>
+  <text x="786" y="318" class="value">--</text>
+  <text x="993" y="318">μm</text>
+  <text x="786" y="346" class="secondary">尚未采样</text>
+  <rect x="228" y="374" width="814" height="320" class="panel" />
+  <text x="244" y="403" class="heading">测试曲线</text>
+  <text x="594" y="403" class="secondary">通道：X　　方向：全部　　循环：全部</text>
+  <path d="M244 416H1026" class="line" />
+  <rect x="292" y="444" width="716" height="194" fill="white" stroke="#A6A6A6" />
+  <path d="M292 492H1008M292 540H1008M292 588H1008M435 444V638M578 444V638M721 444V638M864 444V638" stroke="#E7E7E7" fill="none" />
+  <text x="246" y="437" class="secondary">误差 μm</text>
+  <text x="650" y="536" text-anchor="middle" class="heading secondary">暂无采样数据</text>
+  <text x="650" y="563" text-anchor="middle" class="secondary">配置并锁定参数，设备就绪后启动测试</text>
+  <text x="916" y="660" class="secondary">基准位置 mm</text>
+  <path d="M310 677H340" stroke="#315A9A" stroke-width="2" />
+  <text x="349" y="682" class="secondary">正向</text>
+  <path d="M420 677H450" stroke="#9B5B17" stroke-width="2" stroke-dasharray="5 3" />
+  <text x="459" y="682" class="secondary">反向</text>
+  <!-- 控制与执行，按钮保持在此区域 -->
+  <rect x="1054" y="254" width="328" height="440" class="panel" />
+  <text x="1070" y="282" class="heading">控制与执行</text>
+  <path d="M1070 295H1366" class="line" />
+  <text x="1070" y="323" class="secondary">当前步骤</text>
+  <text x="1070" y="351" class="heading">等待测试准备</text>
+  <text x="1070" y="389">循环：-- / --</text>
+  <text x="1230" y="389">方向：--</text>
+  <text x="1070" y="421">点位：-- / --</text>
+  <text x="1070" y="453">已用时间：--</text>
+  <rect x="1070" y="473" width="296" height="12" fill="#E1E1E1" stroke="#B8B8B8" />
+  <rect x="1070" y="508" width="296" height="110" fill="#FFF4D8" stroke="#D1B877" />
+  <text x="1082" y="533" style="font-weight:600">启动条件未满足</text>
+  <text x="1082" y="558">· 参数未确认并锁定</text>
+  <text x="1082" y="581">· 设备及基准未连接</text>
+  <text x="1082" y="604">· 安全链状态未知</text>
+  <rect x="1070" y="634" width="142" height="44" rx="2" fill="#E0E0E0" stroke="#B8B8B8" />
+  <rect x="1224" y="634" width="142" height="44" rx="2" fill="#E0E0E0" stroke="#B8B8B8" />
+  <text x="1141" y="662" text-anchor="middle" class="disabled">启动测试</text>
+  <text x="1295" y="662" text-anchor="middle" class="disabled">停止测试</text>
+  <!-- 下部结果 -->
+  <rect x="228" y="706" width="1154" height="218" class="panel" />
+  <text x="244" y="735" class="heading">点位记录与结果</text>
+  <text x="896" y="735" class="secondary">数据质量：尚未采样　｜　判定：未判定</text>
+  <rect x="244" y="751" width="1122" height="34" fill="#E9E9E9" stroke="#A6A6A6" />
+  <rect x="244" y="785" width="1122" height="89" fill="white" stroke="#A6A6A6" />
+  <text x="260" y="774">循环</text><text x="333" y="774">方向</text><text x="408" y="774">点号</text>
+  <text x="488" y="774">目标位置 mm</text><text x="650" y="774">DUT mm</text><text x="806" y="774">基准 mm</text>
+  <text x="958" y="774">误差 μm</text><text x="1090" y="774">有效样本</text><text x="1245" y="774">质量</text>
+  <text x="805" y="837" text-anchor="middle" class="secondary">暂无点位记录；测试结束后保留原始数据、统计与异常</text>
+  <text x="244" y="903" class="secondary">最大绝对误差：-- μm　　误差极差：-- μm　　评价规则：待确认，不输出合格结论</text>
+  <!-- 右侧常驻状态面板 -->
+  <rect x="1400" y="78" width="280" height="864" fill="#F4F4F4" stroke="#A6A6A6" />
+  <text x="1416" y="114" class="heading">设备状态</text>
+  <rect x="1416" y="134" width="248" height="108" class="panel" />
+  <rect x="1428" y="146" width="224" height="32" fill="#FFAD00" />
+  <text x="1540" y="168" text-anchor="middle" style="font-weight:600">未准备好</text>
+  <text x="1428" y="203">设备未连接 / 参数未锁定</text>
+  <text x="1428" y="227" class="secondary">运行模式：未知</text>
+  <rect x="1416" y="254" width="248" height="142" class="panel" />
+  <text x="1428" y="282" class="heading">安全链</text>
+  <path d="M1428 295H1652" class="line" />
+  <circle cx="1435" cy="321" r="6" fill="#B5B5B5" /><text x="1452" y="326">硬件急停回路：未知</text>
+  <circle cx="1435" cy="353" r="6" fill="#B5B5B5" /><text x="1452" y="358">限位状态：未知</text>
+  <text x="1428" y="383" class="secondary">以配置及硬件反馈为准</text>
+  <rect x="1416" y="408" width="248" height="212" class="panel" />
+  <text x="1428" y="436" class="heading">控制与通信</text>
+  <path d="M1428 449H1652" class="line" />
+  <g fill="#B5B5B5"><circle cx="1435" cy="477" r="6" /><circle cx="1435" cy="511" r="6" /><circle cx="1435" cy="545" r="6" /><circle cx="1435" cy="579" r="6" /></g>
+  <text x="1452" y="482">运动控制器：未连接</text>
+  <text x="1452" y="516">被测设备：未连接</text>
+  <text x="1452" y="550">测量基准：未连接</text>
+  <text x="1452" y="584">采集设备：未连接</text>
+  <rect x="1416" y="632" width="248" height="176" class="panel" />
+  <text x="1428" y="660" class="heading">测量质量</text>
+  <path d="M1428 673H1652" class="line" />
+  <text x="1428" y="701">参考有效性：未知</text>
+  <text x="1428" y="733">同步状态：未配置</text>
+  <text x="1428" y="765">数据新鲜度：尚无数据</text>
+  <text x="1428" y="794" class="secondary">无有效数据时不显示为零值</text>
+  <rect x="1416" y="820" width="248" height="34" rx="2" class="button" />
+  <text x="1540" y="843" text-anchor="middle">查看诊断详情</text>
+  <!-- 底栏 -->
+  <rect y="942" width="1680" height="38" fill="#F4F4F4" />
+  <path d="M0 942H1680" class="line" />
+  <text x="20" y="967" class="secondary">界面方案 V0.1　｜　初始未连接状态</text>
+  <text x="1658" y="967" text-anchor="end" class="secondary">日期与时间：由程序运行时显示</text>
+</svg>

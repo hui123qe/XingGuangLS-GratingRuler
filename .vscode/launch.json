@@ -1,0 +1,16 @@
+{
+    "version": "0.2.0",
+    "configurations": [
+        {
+            "name": "光栅尺测试台",
+            "type": "coreclr",
+            "request": "launch",
+            "preLaunchTask": "build-grating-ruler",
+            "program": "${workspaceFolder}/GratingRuler/bin/Debug/net8.0-windows/GratingRuler.dll",
+            "cwd": "${workspaceFolder}/GratingRuler",
+            "console": "internalConsole",
+            "stopAtEntry": false,
+            "justMyCode": true
+        }
+    ]
+}
