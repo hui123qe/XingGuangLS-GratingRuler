@@ -55,6 +55,7 @@ public sealed class ParametersViewModel : ObservableObject
         set { if (CanEdit && Set(ref _dutType, value)) { RefreshTasks(); NotifySummary(); } }
     }
     public string Bench => IsSpeed ? "高速测试台" : "常规测试台";
+    public bool HasYAxis => !IsSpeed;
     public string DeviceId { get => _deviceId; set { if (CanEdit && Set(ref _deviceId, value)) NotifySummary(); } }
     public string Batch { get => _batch; set { if (CanEdit && Set(ref _batch, value)) NotifySummary(); } }
     public string Reference { get => _reference; set { if (CanEdit && Set(ref _reference, value)) NotifySummary(); } }
@@ -67,6 +68,7 @@ public sealed class ParametersViewModel : ObservableObject
             RebuildFields();
             OnPropertyChanged(nameof(TaskNote));
             OnPropertyChanged(nameof(Bench));
+            OnPropertyChanged(nameof(HasYAxis));
             OnPropertyChanged(nameof(IsSpeed));
             OnPropertyChanged(nameof(MotionTitle));
             NotifySummary();
