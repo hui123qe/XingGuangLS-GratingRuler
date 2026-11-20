@@ -21,6 +21,9 @@ public sealed class ParametersViewModel : ObservableObject
     private TestTask _selectedTask = TestTask.All[0];
     private bool _isLocked;
     private bool _isBusy;
+    private WorkflowStep? _selectedStep;
+    private string _stepName = "步骤 1";
+    private int _previewIndex = -1;
 
     public ParametersViewModel()
     {
@@ -28,6 +31,15 @@ public sealed class ParametersViewModel : ObservableObject
         RestoreCommand = new(async _ => await RestoreAsync(), _ => CanEdit);
         LockCommand = new(_ => Lock(), _ => CanEdit);
         UnlockCommand = new(_ => { IsLocked = false; Feedback = "参数已解锁。"; }, _ => IsLocked && !IsBusy);
+        AddStepCommand = new(_ => StoreStep(false), _ => CanEdit);
+        UpdateStepCommand = new(_ => StoreStep(true), _ => CanEdit && SelectedStep is not null);
+        LoadStepCommand = new(_ => LoadStep(), _ => CanEdit && SelectedStep is not null);
+        DeleteStepCommand = new(_ => { Steps.Remove(SelectedStep!); SelectedStep = Steps.LastOrDefault(); ResetPreview(); }, _ => CanEdit && SelectedStep is not null);
+        MoveUpCommand = new(_ => MoveStep(-1), _ => CanEdit && SelectedStep is not null && Steps.IndexOf(SelectedStep) > 0);
+        MoveDownCommand = new(_ => MoveStep(1), _ => CanEdit && SelectedStep is not null && Steps.IndexOf(SelectedStep) < Steps.Count - 1);
+        NextPreviewCommand = new(_ => { _previewIndex++; OnPropertyChanged(nameof(PreviewText)); UpdateCommands(); }, _ => !IsBusy && _previewIndex + 1 < Steps.Count);
+        ResetPreviewCommand = new(_ => ResetPreview(), _ => !IsBusy && _previewIndex >= 0);
+        Steps.CollectionChanged += (_, _) => UpdateCommands();
         RefreshTasks();
     }
 
@@ -48,6 +60,24 @@ public sealed class ParametersViewModel : ObservableObject
     public RelayCommand RestoreCommand { get; }
     public RelayCommand LockCommand { get; }
     public RelayCommand UnlockCommand { get; }
+    public ObservableCollection<WorkflowStep> Steps { get; } = [];
+    public string StepName { get => _stepName; set => Set(ref _stepName, value); }
+    public WorkflowStep? SelectedStep
+    {
+        get => _selectedStep;
+        set { if (Set(ref _selectedStep, value)) UpdateCommands(); }
+    }
+    public string PreviewText => _previewIndex < 0 ? "流程预览：尚未开始（不发送运动或采集指令）"
+        : $"预览 {_previewIndex + 1}/{Steps.Count} · {Steps[_previewIndex].Name} · Rx/Ry/Rz = {Steps[_previewIndex].Pose} ° · 到位 → 稳定 → 按本步参数测试"
+          + (_previewIndex == Steps.Count - 1 ? " · 已到末步" : "");
+    public RelayCommand AddStepCommand { get; }
+    public RelayCommand UpdateStepCommand { get; }
+    public RelayCommand LoadStepCommand { get; }
+    public RelayCommand DeleteStepCommand { get; }
+    public RelayCommand MoveUpCommand { get; }
+    public RelayCommand MoveDownCommand { get; }
+    public RelayCommand NextPreviewCommand { get; }
+    public RelayCommand ResetPreviewCommand { get; }
 
     public string DutType
     {
@@ -162,12 +192,13 @@ public sealed class ParametersViewModel : ObservableObject
                 }
                 break;
         }
+        PoseFields.Add(new("poseZ", "准备 Z 位置", "mm", "0"));
+        PoseFields.Add(new("poseRx", "准备 Rx 角度", "°", "0"));
+        PoseFields.Add(new("poseRy", "准备 Ry 角度", "°", "0"));
+        PoseFields.Add(new("poseRz", "准备 Rz 角度", "°", "0"));
+        PoseFields.Add(new("poseSettle", "姿态稳定时长", "s", "1", 0));
         if (SelectedTask.Id == "T06")
         {
-            PoseFields.Add(new("poseZ", "准备 Z 位置", "mm", "0"));
-            PoseFields.Add(new("poseRx", "准备 Rx 角度", "°", "0"));
-            PoseFields.Add(new("poseRy", "准备 Ry 角度", "°", "0"));
-            PoseFields.Add(new("poseSettle", "姿态稳定时长", "s", "1", 0));
             MotionFields.Add(new("rzStart", "Rz 起始角度", "°", "0"));
             MotionFields.Add(new("rzEnd", "Rz 终止角度", "°", "1"));
             MotionFields.Add(new("rzVelocity", "Rz 角速度", "°/s", "1", 0.001));
@@ -233,13 +264,90 @@ public sealed class ParametersViewModel : ObservableObject
         Feedback = "参数已锁定。设备接入后仍须校验行程、安全链和采集条件。";
     }
 
+    private void StoreStep(bool replace)
+    {
+        TryAcceptStep(this, replace);
+    }
+
+    public ParametersViewModel CreateStepEditor(bool edit)
+    {
+        var editor = new ParametersViewModel();
+        var source = SelectedStep;
+        if (source is not null)
+            editor.ApplyFields(source.DutType, source.DeviceId, source.Batch, source.Reference, source.TaskId, source.Fields);
+        else
+            editor.ApplyFields(DutType, DeviceId, Batch, Reference, SelectedTask.Id,
+                AllFields.ToDictionary(field => field.Key, field => field.Value));
+        editor.StepName = edit && source is not null ? source.Name : $"步骤 {Steps.Count + 1}";
+        editor.Feedback = "配置本步骤的姿态、运动及采集参数，确认后显示为流程节点。";
+        return editor;
+    }
+
+    public bool TryAcceptStep(ParametersViewModel editor, bool replace)
+    {
+        if (!CanEdit || (replace && SelectedStep is null)) return false;
+        if (string.IsNullOrWhiteSpace(editor.StepName)) { editor.Feedback = "请填写步骤名称。"; return false; }
+        if (!editor.Validate()) return false;
+        if (editor.SelectedTask.Id == "T06") { editor.Feedback = "动态 Rz 方案待定，暂不能加入流程。"; return false; }
+        if (Steps.Any(step => step != (replace ? SelectedStep : null) &&
+            (step.DutType != editor.DutType || step.DeviceId != editor.DeviceId || step.Batch != editor.Batch || (step.TaskId == "T05") != editor.IsSpeed)))
+        { editor.Feedback = "同一流程须使用相同被测类型、设备编号、批次及测试台。"; return false; }
+        var step = new WorkflowStep(editor.StepName.Trim(), editor.DutType, editor.DeviceId, editor.Batch, editor.Reference, editor.SelectedTask.Id,
+            editor.AllFields.ToDictionary(field => field.Key, field => field.Value));
+        var index = SelectedStep is null ? Steps.Count - 1 : Steps.IndexOf(SelectedStep);
+        if (replace) Steps[index] = step;
+        else Steps.Insert(index + 1, step);
+        SelectedStep = step;
+        ResetPreview();
+        Feedback = replace ? "已更新所选步骤。" : "已插入步骤；后续修改表单不会影响已保存步骤。";
+        if (!replace) StepName = $"步骤 {Steps.Count + 1}";
+        ApplyFields(step.DutType, step.DeviceId, step.Batch, step.Reference, step.TaskId, step.Fields);
+        return true;
+    }
+
+    private void LoadStep()
+    {
+        var step = SelectedStep!;
+        ApplyFields(step.DutType, step.DeviceId, step.Batch, step.Reference, step.TaskId, step.Fields);
+        StepName = step.Name;
+        Feedback = "已载入所选步骤，修改后点击“更新所选步骤”。";
+    }
+
+    private void ApplyFields(string dut, string device, string batch, string reference, string taskId, Dictionary<string, string> fields)
+    {
+        DutType = dut;
+        DeviceId = device;
+        Batch = batch;
+        Reference = reference;
+        SelectedTask = AvailableTasks.First(task => task.Id == taskId);
+        _taskValues.Remove((DutType, SelectedTask.Id));
+        _fieldsOwner = null;
+        RebuildFields();
+        foreach (var field in AllFields)
+            if (fields.TryGetValue(field.Key, out var value)) field.Value = value ?? "";
+    }
+
+    private void MoveStep(int direction)
+    {
+        var index = Steps.IndexOf(SelectedStep!);
+        Steps.Move(index, index + direction);
+        ResetPreview();
+    }
+
+    private void ResetPreview()
+    {
+        _previewIndex = -1;
+        OnPropertyChanged(nameof(PreviewText));
+        UpdateCommands();
+    }
+
     private async Task SaveAsync()
     {
         IsBusy = true;
         try
         {
-            var draft = new RecipeDraft(2, DutType, DeviceId, Batch, Reference, Bench, SelectedTask.Id,
-                AllFields.ToDictionary(field => field.Key, field => field.Value));
+            var draft = new RecipeDraft(3, DutType, DeviceId, Batch, Reference, Bench, SelectedTask.Id,
+                AllFields.ToDictionary(field => field.Key, field => field.Value), Steps.ToArray());
             Directory.CreateDirectory(Path.GetDirectoryName(DraftPath)!);
             var temporaryPath = DraftPath + ".tmp";
             await File.WriteAllTextAsync(temporaryPath, JsonSerializer.Serialize(draft, new JsonSerializerOptions { WriteIndented = true }));
@@ -258,24 +366,27 @@ public sealed class ParametersViewModel : ObservableObject
         {
             if (!File.Exists(DraftPath)) { Feedback = "没有已保存的草稿。"; return; }
             var draft = JsonSerializer.Deserialize<RecipeDraft>(await File.ReadAllTextAsync(DraftPath));
-            if (draft is null || draft.Version is not (1 or 2) || !DutTypes.Contains(draft.DutType)
+            if (draft is null || draft.Version is not (1 or 2 or 3) || !DutTypes.Contains(draft.DutType)
                 || !References.Contains(draft.Reference)
                 || !IsTaskAllowed(draft.DutType, draft.TaskId)
                 || draft.Fields is null || draft.DeviceId is null || draft.Batch is null)
             { Feedback = "草稿格式不受支持。"; return; }
+            var steps = draft.Steps ?? [];
+            if (steps.Any(step => step is null || string.IsNullOrWhiteSpace(step.Name)
+                || !DutTypes.Contains(step.DutType) || string.IsNullOrWhiteSpace(step.DeviceId)
+                || step.Batch is null || !References.Contains(step.Reference) || step.Fields is null
+                || !IsTaskAllowed(step.DutType, step.TaskId) || step.TaskId == "T06")
+                || steps.Any(step => step.DutType != steps[0].DutType || step.DeviceId != steps[0].DeviceId
+                    || step.Batch != steps[0].Batch || (step.TaskId == "T05") != (steps[0].TaskId == "T05")))
+            { Feedback = "流程步骤格式或测试对象不一致，未恢复。"; return; }
             // 通过属性更新恢复界面联动；恢复不自动锁定或触发设备操作。
             IsBusy = false;
-            DutType = draft.DutType;
-            DeviceId = draft.DeviceId;
-            Batch = draft.Batch;
-            Reference = draft.Reference;
-            SelectedTask = AvailableTasks.First(task => task.Id == draft.TaskId);
-            // 恢复前清除本项目缓存，旧版缺少的字段采用新默认值。
-            _taskValues.Remove((DutType, SelectedTask.Id));
-            _fieldsOwner = null;
-            RebuildFields();
-            foreach (var field in AllFields)
-                if (draft.Fields.TryGetValue(field.Key, out var value)) field.Value = value ?? "";
+            ApplyFields(draft.DutType, draft.DeviceId, draft.Batch, draft.Reference, draft.TaskId, draft.Fields);
+            ResetPreview();
+            Steps.Clear();
+            foreach (var step in steps) Steps.Add(step);
+            SelectedStep = Steps.FirstOrDefault();
+            StepName = $"步骤 {Steps.Count + 1}";
             Feedback = "已恢复草稿，请核对后确认。";
         }
         catch (Exception ex) when (ex is IOException or UnauthorizedAccessException or JsonException)
@@ -290,6 +401,14 @@ public sealed class ParametersViewModel : ObservableObject
         RestoreCommand.RaiseCanExecuteChanged();
         LockCommand.RaiseCanExecuteChanged();
         UnlockCommand.RaiseCanExecuteChanged();
+        AddStepCommand.RaiseCanExecuteChanged();
+        UpdateStepCommand.RaiseCanExecuteChanged();
+        LoadStepCommand.RaiseCanExecuteChanged();
+        DeleteStepCommand.RaiseCanExecuteChanged();
+        MoveUpCommand.RaiseCanExecuteChanged();
+        MoveDownCommand.RaiseCanExecuteChanged();
+        NextPreviewCommand.RaiseCanExecuteChanged();
+        ResetPreviewCommand.RaiseCanExecuteChanged();
     }
     private void NotifySummary()
     {
@@ -298,5 +417,5 @@ public sealed class ParametersViewModel : ObservableObject
     }
 
     private sealed record RecipeDraft(int Version, string DutType, string DeviceId, string Batch,
-        string Reference, string Bench, string TaskId, Dictionary<string, string> Fields);
+        string Reference, string Bench, string TaskId, Dictionary<string, string> Fields, WorkflowStep[]? Steps = null);
 }
